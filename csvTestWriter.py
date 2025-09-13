@@ -25,13 +25,22 @@ def main():
         alphabet = string.ascii_letters + string.digits
         writer = csv.writer(out)
         writer.writerow(fields)
+        rowsRemaining = int(sys.argv[2])
+        batchSize = 100000
 
-        for _ in range(int(sys.argv[2])):
-            newRow = []
-            for i in range(numFields):
-                length = max(1, int(random.gauss(averages[i], 2)))
-                newRow.append(''.join(random.choice(alphabet) for _ in range(length)))
-            writer.writerow(newRow)
+        while rowsRemaining > 0:
+            currentBatchSize = min(batchSize, rowsRemaining)
+            batchRows = []
+
+            for _ in range(currentBatchSize):
+                newRow = []
+                for i in range(numFields):
+                    length = max(1, int(random.gauss(averages[i], 2)))
+                    newRow.append(''.join(random.choices(alphabet, k=length)))
+                batchRows.append(newRow)
+            
+            writer.writerows(batchRows)
+            rowsRemaining -= currentBatchSize
 
     return
 
